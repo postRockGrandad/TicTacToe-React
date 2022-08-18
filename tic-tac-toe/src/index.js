@@ -1,9 +1,9 @@
-import React from 'react';
+import { React, useState, Component } from 'react';
 import ReactDOM from 'react-dom/client';
 import { PlayerInfoModal } from './components/PlayerInfo/PlayerInfo';
 import './index.css';
 
-class Board extends React.Component {
+class Board extends Component {
   constructor(props){
     super(props);
 
@@ -55,6 +55,7 @@ class Board extends React.Component {
 
   render() {
     let winner = this.determineWinningValue();
+    // console.log(winner);
     let player = this.state.currentValue ==='X' ? this.props.playerNames[0] : this.props.playerNames[1];
     let message = winner ? "Winner is: " : "Next player is: ";
 
@@ -83,47 +84,40 @@ class Board extends React.Component {
 
 //========================================================================================================================
 
-class Game extends React.Component {
-  constructor(props){
-    super(props);
+function Game() {
+  const [promptPlayerNames, setPlayerNamePrompt] = useState(true);
+  const [players, setPlayers] = useState({0: null, 1: null})
 
-    this.state = {
-      promptPlayerNames: true,
-      players: {0: null, 1: null}
-    }
-  }
-
-  setPlayer(key, value){
-    let players = this.state.players;
-
+  function setPlayer(key, value){
+    //update specific player before updating state of both
     players[key] = value;
-    this.setState({players});
+    setPlayers({...players});
   }
 
-  startGame(){
+  function startGame(){
     //if both players have names given, hide input modal and begin game
-    if(this.state.players['0'] && this.state.players['1']){
-      this.setState({...this.state, promptPlayerNames: false});
+    if(players['0'] && players['1']){
+      setPlayerNamePrompt(false);
     } else {
       //TODO throw error about missing player names
     }
   }
 
-  render() {
+  
     return (
       <div className="game">
         <div className="game-board">
-          <Board playerNames={this.state.players}/>
+          <Board playerNames={players}/>
         </div>
         <div className="game-info">
           <div>{/* status */}</div>
           <ol>{/* TODO */}</ol>
         </div>
 
-        {this.state.promptPlayerNames && <PlayerInfoModal playerNameChange={(playerName, value) => this.setPlayer(playerName, value)} startGame={()=> this.startGame()}/>}
+        {promptPlayerNames && <PlayerInfoModal playerNameChange={(playerName, value) => setPlayer(playerName, value)} startGame={()=> startGame()}/>}
       </div>
     );
-  }
+  
 }
 
 
