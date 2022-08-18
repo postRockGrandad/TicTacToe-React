@@ -1,6 +1,6 @@
 body {
 	font: 14px "Century Gothic", Futura, sans-serif;
-	margin: 20px;
+	margin: 0px;
 }
 
 ol, ul {
@@ -15,6 +15,24 @@ ol, ul {
 
 .status {
 	margin-bottom: 10px;
+}
+
+table{
+	border: 1px solid red;
+	text-align: center;
+	font-weight: bold;
+}
+
+td {
+	border: 1px solid blue;	
+}
+td:hover {
+	cursor: pointer;
+}
+
+td {
+	height: 48px;
+	width: 48px;
 }
 
 .square {
