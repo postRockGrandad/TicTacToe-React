@@ -1,6 +1,5 @@
 body {
 	font-family: Consolas;
-	/* font: 14px "Century Gothic", Futura, sans-serif; */
 	margin: 0px;
 }
 
@@ -16,11 +15,18 @@ body {
 }
 
 .status {
+	font-size: 1.7rem;
 	margin-bottom: 10px;
 }
 
 .game-board {
 	text-align: center;
+}
+
+.game-board table {
+	width: 325px;
+	height: 325px;
+	margin: 0 auto;
 }
 
 button {
@@ -37,30 +43,24 @@ button {
 	vertical-align: middle;
 }
 
-td {
+.square {
 	height: 100px;
 	width: 100px;
-}
-td:hover {
-	cursor: pointer;
-}
-
-.square {
 	background: rgb(219, 211, 211);
     border: 1px solid #999;
     font-size: 24px;
     font-weight: bold;
 }
+.square:hover {
+	cursor: pointer;
+	background: rgb(169 164 164);
+}
 
-.square-x {
+.square-x, .square-x:hover {
 	color: #cd0404;
     background: #f19090b8;
 }
-.square-o {
+.square-o, .square-o:hover {
 	color: #0505c3;
     background: #8888d9d9;
-}
-
-.square:focus {
-	outline: none;
 }

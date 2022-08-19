@@ -13,35 +13,35 @@ export function Scoreboard(){
                     <h1>Scoreboard</h1>
                 </div>
                 <hr />
-                <div className="body">
-                    
-                <table>
-                    <thead>
-                        <th>Winner</th>
-                        <th>Loser</th>
-                        <th>Turns Taken</th>
-                        <th>Date</th>
-                    </thead>
-                    <tbody>
-                        {[...gameHistory].map(row => 
-                            <tr key={row}>                   
-                                <td key={row +"_winner"}> 
-                                    {row.winner}
-                                </td>                   
-                                <td key={row +"_loser"}> 
-                                    {row.loser}
-                                </td>                   
-                                <td key={row +"_count"}> 
-                                    {row.count}
-                                </td>                  
-                                <td key={row +"_date"}> 
-                                    {row.date.toString().split("00:")[0]}
-                                </td>
-                            </tr>                            
-                        )}
-                    </tbody>
-                </table>
-                    
+                <div className="body">          
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Winner</th>
+                                <th>Loser</th>
+                                <th>Turns Taken</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {[...gameHistory].map((row, i) => 
+                                <tr key={i}>                   
+                                    <td key={i +"_winner"}> 
+                                        {row.winner}
+                                    </td>                   
+                                    <td key={i +"_loser"}> 
+                                        {row.loser}
+                                    </td>                   
+                                    <td key={i +"_count"}> 
+                                        {row.count}
+                                    </td>                  
+                                    <td key={i +"_date"}> 
+                                        {row.date.toString().split("00:")[0]}
+                                    </td>
+                                </tr>                            
+                            )}
+                        </tbody>
+                    </table>
                 </div>
                 <div className="footer">
                     <div className="controls-container">

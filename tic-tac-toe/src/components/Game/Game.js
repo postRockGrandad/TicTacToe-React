@@ -1,16 +1,19 @@
-import { React, useEffect, useState } from 'react';
+import { React, useEffect, useState, useContext } from 'react';
 import { PlayerInfoModal } from '../PlayerInfo/PlayerInfo';
 import { GameControls } from '../GameControls/GameControls';
+import { GameHistoryContext } from '../../gameHistoryContext'; 
 
 import './Game.css';
 
 export function Game(props) {
   const [playerNamesPrompt, promptForPlayerNames] = useState(true);
-  const [players, setPlayers] = useState({0: null, 1: null})
+  const [players, setPlayers] = useState({0: null, 1: null});
+  //3x3 2d array of nulls
   const [squareValues, setSquareValues] = useState(Array.from({ length:3 }, () => (Array.from({ length:3 }, ()=> null))));
   const [currentValue, setCurrentValue] = useState('X');
   const [turnCounter, setTurnCount] = useState(0);
 
+  const gameHistory = useContext(GameHistoryContext);
   const winner = determineWinningValue();
 
   //callback to push new game history to global state in App used as injected value of GameHistoryContext for Scoreboard
@@ -31,7 +34,22 @@ export function Game(props) {
   function startGame(){
     //if both players have names given, hide input modal and begin game
     if(players['0'] && players['1']){
-      promptForPlayerNames(false);
+      if(players['0'] !== players['1']){
+        //identify if player matchup has played before
+        const previousMatch = gameHistory.filter(hist => 
+          (hist.loser === players['0'] && hist.winner === players['1'])
+          || (hist.loser === players['1'] && hist.winner === players['0'])
+        )?.[0]; //take top match of X - sorted array so top === latest 
+    
+        if(previousMatch){
+          //set players such that the previous winner in matchup is player 1 (first turn)
+          setPlayers({0: previousMatch.winner, 1: previousMatch.loser});
+        }
+
+        promptForPlayerNames(false);
+      } else {
+        //TODO: display error about duplicate names
+      }
     } else {
       console.error("MISSING PLAYER NAME");
       //TODO: display error
@@ -54,6 +72,7 @@ export function Game(props) {
       setTurnCount(turnCounter + 1);
     } else {
       if(winner) console.error("GAME ALREADY WON BY", winner);
+      //TODO: display error
       if(squares[row][col] !== null) console.error("SQUARE ALREADY PLAYED BY:", squares[row][col]);
       //TODO: display error
     }
