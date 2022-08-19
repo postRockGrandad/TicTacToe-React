@@ -48,11 +48,10 @@ export function Game(props) {
 
         promptForPlayerNames(false);
       } else {
-        //TODO: display error about duplicate names
+        console.error("PLAYERS CANT HAVE SAME NAME");
       }
     } else {
       console.error("MISSING PLAYER NAME");
-      //TODO: display error
     }
   }
 
@@ -71,10 +70,8 @@ export function Game(props) {
       setCurrentValue(nextValue);
       setTurnCount(turnCounter + 1);
     } else {
-      if(winner) console.error("GAME ALREADY WON BY", winner);
-      //TODO: display error
+      if(winner) console.error("GAME ALREADY WON BY:", winner);
       if(squares[row][col] !== null) console.error("SQUARE ALREADY PLAYED BY:", squares[row][col]);
-      //TODO: display error
     }
   }
 
