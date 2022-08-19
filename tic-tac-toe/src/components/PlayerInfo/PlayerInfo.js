@@ -10,8 +10,8 @@ export function PlayerInfoModal(props) {
             <div className="body">
                 <p>Enter player names:</p>
                 <div className="input-container">
-                <label htmlFor="player1Name">Player 1:</label>
-                <input id="player1Name" className="player1" onChange={(event)=>{props.playerNameChange(0, event.target.value);}}/>
+                    <label htmlFor="player1Name">Player 1:</label>
+                    <input id="player1Name" className="player1" onChange={(event)=>{props.playerNameChange(0, event.target.value);}}/>
                 </div>
                 <div className="input-container">
                     <label htmlFor="player2Name">Player 2:</label>

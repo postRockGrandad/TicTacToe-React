@@ -1,37 +1,48 @@
-import { React, useState, Component } from 'react';
+import { React, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { PlayerInfoModal } from './components/PlayerInfo/PlayerInfo';
 import './index.css';
 
-class Board extends Component {
-  constructor(props){
-    super(props);
 
-    this.state = {
-      currentValue: 'X',
-      winner: null,
-      squareValues: Array.from(
-        { length:3 }, () => (Array.from({ length:3 }, ()=> null))
-      )
-    };
+function Game() {
+  const [promptPlayerNames, setPlayerNamePrompt] = useState(true);
+  const [players, setPlayers] = useState({0: null, 1: null})
+  const [squareValues, setsquareValues] = useState(Array.from({ length:3 }, () => (Array.from({ length:3 }, ()=> null))));
+  const [currentValue, setCurrentValue] = useState('X');
+  const winner = determineWinningValue();
+
+  function setPlayer(key, value){
+    //update specific player before updating state of both
+    players[key] = value;
+    setPlayers({...players});
   }
 
-  selectSquare(row, col) {
-    const squareValues = this.state.squareValues.slice();
-    const winner = this.state.winner;
-
-    if(squareValues[row][col] === null && !winner){
-      const nextValue = this.state.currentValue === 'X' ? 'O' : 'X';
-
-      squareValues[row][col] = this.state.currentValue;
-      this.setState({squareValues: squareValues, currentValue: nextValue});
+  function startGame(){
+    //if both players have names given, hide input modal and begin game
+    if(players['0'] && players['1']){
+      setPlayerNamePrompt(false);
     } else {
-      //TODO: error that square has already been used in previous turn or winner exists
+      console.log("MISSING PLAYER NAME");
+      //TODO throw error about missing player names
     }
   }
 
-  determineWinningValue() {
-    const flatIndexValues = this.state.squareValues.slice().flat(1);
+  function selectSquare(row, col) {
+    const squares = squareValues.slice();
+
+    if(squares[row][col] === null && !winner){
+      const nextValue = currentValue === 'X' ? 'O' : 'X';
+
+      squares[row][col] = currentValue;
+      setsquareValues(squares);
+      setCurrentValue(nextValue);
+    } else {
+      //TODO: throw error that square has already been used in previous turn or winner exists
+    }
+  }
+
+  function determineWinningValue() {
+    const flatIndexValues = squareValues.slice().flat(1);
 
     const winConditionIndexes = [
       [0, 1, 2], // horizontal (1st row) 
@@ -53,70 +64,37 @@ class Board extends Component {
     return null;
   }
 
-  render() {
-    let winner = this.determineWinningValue();
-    // console.log(winner);
-    let player = this.state.currentValue ==='X' ? this.props.playerNames[0] : this.props.playerNames[1];
-    let message = winner ? "Winner is: " : "Next player is: ";
-
-    const status = message + player;
-
-    return (
-      <div>
-        <div className="status">{status}</div>
+  function getGameStatus(){
+    if(winner){
+      return "Winner: " + (winner === 'X' ? players[0] : players[1]);
+    }
+    return "Next turn: " + (currentValue === 'X' ? players[0] : players[1]);
+  }
+  
+  return (
+    <div className="game">
+      <div className="game-board">
+        <div className="status">{getGameStatus()}</div>
         <table>
           <tbody>
             {/* 3 rows of 3 cells */}
             {[...Array(3).keys()].map(row => 
             <tr key={row}> 
               {[...Array(3).keys()].map(col => 
-              <td onClick={()=>{this.selectSquare(row, col)}} key={row + "_" + col}> 
-                {this.state.squareValues[row][col]}
+              <td onClick={()=>{selectSquare(row, col)}} key={row + "_" + col}> 
+                {squareValues[row][col]}
               </td>)} 
             </tr>)}
           </tbody>
         </table>
       </div>
-    );
-  }
-}
-
-
-//========================================================================================================================
-
-function Game() {
-  const [promptPlayerNames, setPlayerNamePrompt] = useState(true);
-  const [players, setPlayers] = useState({0: null, 1: null})
-
-  function setPlayer(key, value){
-    //update specific player before updating state of both
-    players[key] = value;
-    setPlayers({...players});
-  }
-
-  function startGame(){
-    //if both players have names given, hide input modal and begin game
-    if(players['0'] && players['1']){
-      setPlayerNamePrompt(false);
-    } else {
-      //TODO throw error about missing player names
-    }
-  }
-
-  
-    return (
-      <div className="game">
-        <div className="game-board">
-          <Board playerNames={players}/>
-        </div>
-        <div className="game-info">
-          <div>{/* status */}</div>
-          <ol>{/* TODO */}</ol>
-        </div>
-
-        {promptPlayerNames && <PlayerInfoModal playerNameChange={(playerName, value) => setPlayer(playerName, value)} startGame={()=> startGame()}/>}
+      <div className="game-info">
+        <ol>{/* TODO */}</ol>
       </div>
-    );
+
+      {promptPlayerNames && <PlayerInfoModal playerNameChange={(playerName, value) => setPlayer(playerName, value)} startGame={()=> startGame()}/>}
+    </div>
+  );
   
 }
 
