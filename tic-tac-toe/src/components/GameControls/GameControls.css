@@ -1,12 +1,11 @@
 .controls-container {
-    width: 22.5vw;
+    width: 315px;
     justify-content: center;
     display: flex;
     align-items: center
 }
 
 .controls-container button {
-    width: calc(50% - 2rem);
     margin: 1rem;
     font-size: 1.2rem;
     height: 50px;
