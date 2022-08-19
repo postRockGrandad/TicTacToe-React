@@ -1,18 +1,21 @@
 import { React, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { PlayerInfoModal } from './components/PlayerInfo/PlayerInfo';
+import { GameControls } from './components/GameControls/GameControls';
+
 import './index.css';
 
-
 function Game() {
-  const [promptPlayerNames, setPlayerNamePrompt] = useState(true);
+  const [playerNamesPrompt, promptForPlayerNames] = useState(true);
   const [players, setPlayers] = useState({0: null, 1: null})
-  const [squareValues, setsquareValues] = useState(Array.from({ length:3 }, () => (Array.from({ length:3 }, ()=> null))));
+  const [squareValues, setSquareValues] = useState(Array.from({ length:3 }, () => (Array.from({ length:3 }, ()=> null))));
   const [currentValue, setCurrentValue] = useState('X');
+  const [turnCounter, setTurnCount] = useState(0);
+
   const winner = determineWinningValue();
 
   function setPlayer(key, value){
-    //update specific player before updating state of both
+    //assign player name, update players state
     players[key] = value;
     setPlayers({...players});
   }
@@ -20,30 +23,39 @@ function Game() {
   function startGame(){
     //if both players have names given, hide input modal and begin game
     if(players['0'] && players['1']){
-      setPlayerNamePrompt(false);
+      promptForPlayerNames(false);
     } else {
-      console.log("MISSING PLAYER NAME");
-      //TODO throw error about missing player names
+      console.error("MISSING PLAYER NAME");
+      //TODO: display error
     }
   }
 
   function selectSquare(row, col) {
+    //copy squareValues for updating - keep state immutable
     const squares = squareValues.slice();
 
+    //if game in play and selected square is vacant, play that square
     if(squares[row][col] === null && !winner){
+      //play square for current player, update player value
       const nextValue = currentValue === 'X' ? 'O' : 'X';
-
       squares[row][col] = currentValue;
-      setsquareValues(squares);
+
+      //immutably update states (assign new values)
+      setSquareValues(squares);
       setCurrentValue(nextValue);
+      setTurnCount(turnCounter + 1);
     } else {
-      //TODO: throw error that square has already been used in previous turn or winner exists
+      if(winner) console.error("GAME ALREADY WON BY", winner);
+      if(squares[row][col] !== null) console.error("SQUARE ALREADY PLAYED BY:", squares[row][col]);
+      //TODO: display error
     }
   }
 
   function determineWinningValue() {
+    //flatten 3x3 2d into 1x9 1d for easier win comparisons
     const flatIndexValues = squareValues.slice().flat(1);
 
+    //win conditions - 1d index groupings that must have identical values to trigger a win 
     const winConditionIndexes = [
       [0, 1, 2], // horizontal (1st row) 
       [3, 4, 5], // horizontal (2nd row)
@@ -54,9 +66,10 @@ function Game() {
       [0, 4, 8], // diagonal (top-left -> bottom-right)
       [2, 4, 6], // diagonal (bottom-left -> top-right)
     ];
+
+    //victory if value at all indexes for given win condition are equal and not nullish
     for (let i = 0; i < winConditionIndexes.length; i++) {
       const [a, b, c] = winConditionIndexes[i];
-      //victory if value at all indexes for given win condition are equal and not nullish
       if (flatIndexValues[a] && flatIndexValues[a] === flatIndexValues[b] && flatIndexValues[a] === flatIndexValues[c]) {
         return flatIndexValues[a];
       }
@@ -65,12 +78,19 @@ function Game() {
   }
 
   function getGameStatus(){
+    //return status string of current game
     if(winner){
       return "Winner: " + (winner === 'X' ? players[0] : players[1]);
     }
     return "Next turn: " + (currentValue === 'X' ? players[0] : players[1]);
   }
   
+  function resetGame(){
+    setSquareValues(Array.from({ length:3 }, () => (Array.from({ length:3 }, ()=> null))));
+    setCurrentValue('X');
+    setTurnCount(0);
+  }
+
   return (
     <div className="game">
       <div className="game-board">
@@ -81,26 +101,21 @@ function Game() {
             {[...Array(3).keys()].map(row => 
             <tr key={row}> 
               {[...Array(3).keys()].map(col => 
-              <td onClick={()=>{selectSquare(row, col)}} key={row + "_" + col}> 
+              <td onClick={()=>{selectSquare(row, col)}} key={row + "_" + col} className={squareValues[row][col] ? "square square-" + squareValues[row][col].toLowerCase() : "square"}> 
                 {squareValues[row][col]}
               </td>)} 
             </tr>)}
           </tbody>
         </table>
       </div>
-      <div className="game-info">
-        <ol>{/* TODO */}</ol>
-      </div>
+      <GameControls winner={winner} resetClicked={resetGame}/>
 
-      {promptPlayerNames && <PlayerInfoModal playerNameChange={(playerName, value) => setPlayer(playerName, value)} startGame={()=> startGame()}/>}
+      {playerNamesPrompt && <PlayerInfoModal playerNameChange={(playerName, value) => setPlayer(playerName, value)} startGame={()=> startGame()}/>}
     </div>
   );
-  
 }
 
-
 //========================================================================================================================
-
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<Game />);

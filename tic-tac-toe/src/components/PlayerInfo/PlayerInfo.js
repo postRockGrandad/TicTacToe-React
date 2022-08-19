@@ -7,6 +7,7 @@ export function PlayerInfoModal(props) {
             <div className="title">
                 <h1>Tic Tac Toe with React Hooks</h1>
             </div>
+            <hr />
             <div className="body">
                 <p>Enter player names:</p>
                 <div className="input-container">
