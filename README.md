@@ -1,5 +1,4 @@
-# Monese-Task
-Repo for Monese assessment task - create Tic Tac Toe with functioning scoreboard using React Hooks.
+TicTacToe to try out React
 
 To run the application:
 1. clone the repo / download as zip and extract
